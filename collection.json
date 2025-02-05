@@ -1,0 +1,1112 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Backstract Generated APIs - coll-5e9553da218347a4912c7eb3f17d2189",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/users/": {
+            "get": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Get Users",
+                "operationId": "get_users_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_users__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Post Users",
+                "operationId": "post_users_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_users__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostUsers"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/users/id": {
+            "get": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Get Users Id",
+                "operationId": "get_users_id_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_users_id_get",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Delete Users Id",
+                "operationId": "delete_users_id_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_users_id_delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/assignees/": {
+            "get": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Get Assignees",
+                "operationId": "get_assignees_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_assignees__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Post Assignees",
+                "operationId": "post_assignees_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_assignees__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostAssignees"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/assignees/id": {
+            "delete": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Delete Assignees Id",
+                "operationId": "delete_assignees_id_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_assignees_id_delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/tasks/": {
+            "get": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Get Tasks",
+                "operationId": "get_tasks_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_tasks__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Post Tasks",
+                "operationId": "post_tasks_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_tasks__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostTasks"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/tasks/id": {
+            "get": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Get Tasks Id",
+                "operationId": "get_tasks_id_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_tasks_id_get",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Delete Tasks Id",
+                "operationId": "delete_tasks_id_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_tasks_id_delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/tasks/id/": {
+            "put": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Put Tasks Id",
+                "operationId": "put_tasks_id_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_tasks_id__put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PutTasksId"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/team/id": {
+            "get": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Get Team Id",
+                "operationId": "get_team_id_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_team_id_get",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Delete Team Id",
+                "operationId": "delete_team_id_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_team_id_delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/team/": {
+            "post": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Post Team",
+                "operationId": "post_team_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_team__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostTeam"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/team_users/": {
+            "get": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Get Team Users",
+                "operationId": "get_team_users_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_team_users__get",
+                "parameters": [
+                    {
+                        "name": "team_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Team Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Post Team Users",
+                "operationId": "post_team_users_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_team_users__post",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostTeamUsers"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/team_users/id": {
+            "delete": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Delete Team Users Id",
+                "operationId": "delete_team_users_id_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_team_users_id_delete",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "User Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/update-tags": {
+            "patch": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Patch Update Tags",
+                "operationId": "patch_update_tags_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_update_tags_patch",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchUpdateTags"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/user/login": {
+            "post": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Post User Login",
+                "operationId": "post_user_login_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_user_login_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostUserLogin"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/task/change-visibility": {
+            "post": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Post Task Change Visibility",
+                "operationId": "post_task_change_visibility_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_task_change_visibility_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostTaskChangeVisibility"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Patch Task Change Visibility",
+                "operationId": "patch_task_change_visibility_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_task_change_visibility_patch",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pensive-mccarthy-6b7c9f8cde4411efbd780242ac12000431/api/task/get-tags": {
+            "get": {
+                "tags": [
+                    "APIs v1"
+                ],
+                "summary": "Get Task Get Tags",
+                "operationId": "get_task_get_tags_pensive_mccarthy_6b7c9f8cde4411efbd780242ac12000431_api_task_get_tags_get",
+                "parameters": [
+                    {
+                        "name": "task_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "title": "Task Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "PatchUpdateTags": {
+                "properties": {
+                    "task_id": {
+                        "type": "integer",
+                        "title": "Task Id"
+                    },
+                    "tag": {
+                        "type": "string",
+                        "title": "Tag"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "task_id",
+                    "tag"
+                ],
+                "title": "PatchUpdateTags"
+            },
+            "PostAssignees": {
+                "properties": {
+                    "task_id": {
+                        "type": "integer",
+                        "title": "Task Id"
+                    },
+                    "team_id": {
+                        "type": "integer",
+                        "title": "Team Id"
+                    },
+                    "user_id": {
+                        "type": "string",
+                        "title": "User Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "task_id",
+                    "team_id",
+                    "user_id"
+                ],
+                "title": "PostAssignees"
+            },
+            "PostTaskChangeVisibility": {
+                "properties": {
+                    "task_id": {
+                        "type": "integer",
+                        "title": "Task Id"
+                    },
+                    "visibility": {
+                        "type": "string",
+                        "title": "Visibility"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "task_id",
+                    "visibility"
+                ],
+                "title": "PostTaskChangeVisibility"
+            },
+            "PostTasks": {
+                "properties": {
+                    "task_id": {
+                        "type": "string",
+                        "title": "Task Id"
+                    },
+                    "task_name": {
+                        "type": "string",
+                        "title": "Task Name"
+                    },
+                    "ask_description": {
+                        "type": "string",
+                        "title": "Ask Description"
+                    },
+                    "priority": {
+                        "type": "string",
+                        "title": "Priority"
+                    },
+                    "visibility": {
+                        "type": "string",
+                        "title": "Visibility"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "task_id",
+                    "task_name",
+                    "ask_description",
+                    "priority",
+                    "visibility"
+                ],
+                "title": "PostTasks"
+            },
+            "PostTeam": {
+                "properties": {
+                    "team_name": {
+                        "type": "string",
+                        "title": "Team Name"
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "title": "Limit"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "team_name",
+                    "limit"
+                ],
+                "title": "PostTeam"
+            },
+            "PostTeamUsers": {
+                "properties": {
+                    "team_id": {
+                        "type": "integer",
+                        "title": "Team Id"
+                    },
+                    "user_id": {
+                        "type": "string",
+                        "title": "User Id"
+                    },
+                    "can_view": {
+                        "type": "string",
+                        "title": "Can View"
+                    },
+                    "can_comment": {
+                        "type": "string",
+                        "title": "Can Comment"
+                    },
+                    "can_edit": {
+                        "type": "string",
+                        "title": "Can Edit"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "team_id",
+                    "user_id",
+                    "can_view",
+                    "can_comment",
+                    "can_edit"
+                ],
+                "title": "PostTeamUsers"
+            },
+            "PostUserLogin": {
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "title": "Email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "Password"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "title": "PostUserLogin"
+            },
+            "PostUsers": {
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "title": "Username"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "email": {
+                        "type": "string",
+                        "title": "Email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "Password"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "username",
+                    "name",
+                    "email",
+                    "password"
+                ],
+                "title": "PostUsers"
+            },
+            "PutTasksId": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "title": "Created At"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "title": "Updated At"
+                    },
+                    "task_id": {
+                        "type": "string",
+                        "title": "Task Id"
+                    },
+                    "task_name": {
+                        "type": "string",
+                        "title": "Task Name"
+                    },
+                    "ask_description": {
+                        "type": "string",
+                        "title": "Ask Description"
+                    },
+                    "priority": {
+                        "type": "string",
+                        "title": "Priority"
+                    },
+                    "visibility": {
+                        "type": "string",
+                        "title": "Visibility"
+                    },
+                    "tags": {
+                        "type": "string",
+                        "title": "Tags"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "task_id",
+                    "task_name",
+                    "ask_description",
+                    "priority",
+                    "visibility",
+                    "tags"
+                ],
+                "title": "PutTasksId"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        }
+    }
+}
