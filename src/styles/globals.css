@@ -20,3 +20,19 @@ body {
   background: var(--background);
   font-family: "Sora", sans-serif;
 }
+
+label {
+  font-size: 14px;
+}
+
+input,
+textarea,
+button,
+select,
+option,
+a,
+p,
+li,
+ul {
+  font-size: 14px;
+}

@@ -1,115 +1,112 @@
 import React, { useEffect, useState } from 'react';
-import { getTasks } from '@/services/taskService'; // Import the getTasks function
-import TaskCard from './TaskCard'; // Import the TaskCard component
+import { getTasks, changeTaskPriority } from '@/services/taskService';
+import TaskCard from './TaskCard';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const TaskList = () => {
-    const [tasks, setTasks] = useState([]); // Local state to store tasks
-    const [loading, setLoading] = useState(true); // Local state for loading status
-    const [error, setError] = useState(null); // Local state for error handling
+    const [tasks, setTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                const data = await getTasks(); // Fetch tasks from the API
-                setTasks(data.tasks_all); // Update local state with fetched tasks
+                const data = await getTasks();
+                setTasks(data.tasks_all);
             } catch (err) {
-                setError(err.message); // Handle any errors
+                setError(err.message);
             } finally {
-                setLoading(false); // Set loading to false after fetching
+                setLoading(false);
             }
         };
 
-        fetchTasks(); // Call the fetch function
+        fetchTasks();
     }, []);
 
-    const handleDrop = (taskId, newPriority) => {
-        setTasks((prevTasks) =>
-            prevTasks.map((task) =>
-                task.id === taskId ? { ...task, priority: newPriority } : task
-            )
-        );
+    const handleDrop = async (taskId, newPriority) => {
+        try {
+            // Update the local state
+            setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                    task.id === taskId ? { ...task, priority: newPriority } : task
+                )
+            );
+
+            // Call the API to change the task priority
+            await changeTaskPriority({ task_id: taskId, priority: newPriority });
+        } catch (error) {
+            console.error('Error updating task priority:', error);
+            // Revert the state if the API call fails
+            const data = await getTasks();
+            setTasks(data.tasks_all);
+        }
     };
 
     const onDragEnd = (result) => {
         if (!result.destination) return;
 
-        const taskId = result.draggableId;
+        const taskId = parseInt(result.draggableId);
         const newPriority = result.destination.droppableId;
 
         handleDrop(taskId, newPriority);
     };
 
-    if (loading) {
-        return <div>Loading tasks...</div>; // Loading state
-    }
+    if (loading) return <div>Loading tasks...</div>;
+    if (error) return <div>Error: {error}</div>;
 
-    if (error) {
-        return <div>Error: {error}</div>; // Error state
-    }
+    const priorityColumns = {
+        High: tasks.filter(task => task.priority === 'High'),
+        Medium: tasks.filter(task => task.priority === 'Medium'),
+        Normal: tasks.filter(task => task.priority === 'Normal')
+    };
 
-    // Sort tasks into priority columns
-    const highPriorityTasks = tasks.filter(task => task.priority === 'High');
-    const mediumPriorityTasks = tasks.filter(task => task.priority === 'Medium');
-    const lowPriorityTasks = tasks.filter(task => task.priority === 'Low');
+    const columnStyles = {
+        High: 'bg-red-50',
+        Medium: 'bg-yellow-50',
+        Normal: 'bg-cyan-50'
+    };
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <div className="grid grid-cols-3 gap-4">
-                <Droppable droppableId="High" isDropDisabled={true}>
-                    {(provided) => (
-                        <div ref={provided.innerRef} {...provided.droppableProps} className="p-3 h-100 bg-red-50 rounded-lg">
-                            <h3 className="font-bold text-lg mb-2">High Priority</h3>
-                            {highPriorityTasks.map((task, index) => (
-                                <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-                                    {(provided) => (
-                                        <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                            <TaskCard task={task} onDrop={handleDrop} />
-                                        </div>
-                                    )}
-                                </Draggable>
-                            ))}
-                            {provided.placeholder}
-                        </div>
-                    )}
-                </Droppable>
-                <Droppable droppableId="Medium" isDropDisabled={false}>
-                    {(provided) => (
-                        <div ref={provided.innerRef} {...provided.droppableProps} className="p-3 bg-yellow-50 rounded-lg">
-                            <h3 className="font-bold text-lg mb-2">Medium Priority</h3>
-                            {mediumPriorityTasks.map((task, index) => (
-                                <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-                                    {(provided) => (
-                                        <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                            <TaskCard task={task} onDrop={handleDrop} />
-                                        </div>
-                                    )}
-                                </Draggable>
-                            ))}
-                            {provided.placeholder}
-                        </div>
-                    )}
-                </Droppable>
-                <Droppable droppableId="Low" isDropDisabled={false}>
-                    {(provided) => (
-                        <div ref={provided.innerRef} {...provided.droppableProps} className="p-3 bg-cyan-50 rounded-lg">
-                            <h3 className="font-bold text-lg mb-2">Low Priority</h3>
-                            {lowPriorityTasks.map((task, index) => (
-                                <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-                                    {(provided) => (
-                                        <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                            <TaskCard task={task} onDrop={handleDrop} />
-                                        </div>
-                                    )}
-                                </Draggable>
-                            ))}
-                            {provided.placeholder}
-                        </div>
-                    )}
-                </Droppable>
+                {Object.entries(priorityColumns).map(([priority, priorityTasks]) => (
+                    <Droppable droppableId={priority} key={priority}>
+                        {(provided, snapshot) => (
+                            <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                                className={`p-3 rounded-lg ${columnStyles[priority]} ${snapshot.isDraggingOver ? 'bg-opacity-70' : ''
+                                    }`}
+                                style={{ height: "calc(100vh - 150px)" }}
+                            >
+                                <h3 className="font-bold text-lg mb-2">{priority} Priority</h3>
+                                {priorityTasks.map((task, index) => (
+                                    <Draggable
+                                        key={task.id}
+                                        draggableId={task.id.toString()}
+                                        index={index}
+                                    >
+                                        {(provided, snapshot) => (
+                                            <div
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                                className={`mb-2 ${snapshot.isDragging ? 'opacity-50' : ''
+                                                    }`}
+                                            >
+                                                <TaskCard task={task} />
+                                            </div>
+                                        )}
+                                    </Draggable>
+                                ))}
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                ))}
             </div>
         </DragDropContext>
     );
 };
 
-export default TaskList; 
+export default TaskList;

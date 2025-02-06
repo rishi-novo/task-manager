@@ -1,65 +1,61 @@
 import React, { useState } from 'react';
-import { changeTaskVisibility, changeTaskPriority } from '@/services/taskService'; // Import the changeTaskVisibility and changeTaskPriority functions
-import { Eye, EyeOff, FlagTriangleRight } from 'lucide-react'; // Import icons from lucide-react
+import { changeTaskVisibility } from '@/services/taskService';
+import { Eye, EyeOff } from 'lucide-react';
 
-const TaskCard = ({ task, onDrop }) => {
+const TaskCard = ({ task }) => {
     const [visibility, setVisibility] = useState(task.visibility);
-    const [isExpanded, setIsExpanded] = useState(false); // State to manage description expansion
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const handleVisibilityToggle = async () => {
-        const newVisibility = visibility === 'Public' ? 'Private' : 'Public';
-        setVisibility(newVisibility);
-        await changeTaskVisibility({ task_id: task.id, visibility: newVisibility });
-    };
-
-    const handlePriorityChange = async (newPriority) => {
-        await changeTaskPriority({ task_id: task.id, priority: newPriority });
-        onDrop(task.id, newPriority); // Call the onDrop function to update the task in the parent component
-    };
-
-    const getPriorityColor = (priority) => {
-        switch (priority) {
-            case 'High':
-                return 'bg-red-500';
-            case 'Medium':
-                return 'bg-yellow-500';
-            case 'Low':
-                return 'bg-blue-500';
-            default:
-                return '';
+        try {
+            const newVisibility = visibility === 'Public' ? 'Private' : 'Public';
+            await changeTaskVisibility({ task_id: task.id, visibility: newVisibility });
+            setVisibility(newVisibility);
+        } catch (error) {
+            console.error('Error toggling visibility:', error);
         }
     };
 
     return (
-        <div className={`border p-2 mb-4 rounded shadow flex flex-col items-start gap-1 bg-stone-50`} key={task.id}>
+        <div className="border p-2 rounded shadow bg-white">
             <div className="flex items-center justify-between w-full">
-                <button className="text-xs uppercase text-gray-600 bg-gray-200 py-1 px-2 rounded text-uppercase font-medium">{task.task_id}</button>
-                <button onClick={handleVisibilityToggle} className="mt-2 text-zinc-500 flex items-center">
+                <span className="text-xs uppercase text-gray-600 bg-gray-200 py-1 px-2 rounded font-medium">
+                    {task.task_id}
+                </span>
+                <button
+                    onClick={handleVisibilityToggle}
+                    className="text-zinc-500 hover:text-zinc-700 transition-colors"
+                >
                     {visibility === 'Public' ? (
-                        <>
-                            <Eye className="inline" size={16} />
-                            {/* <span className="ml-1">Make Private</span> */}
-                        </>
+                        <Eye size={16} />
                     ) : (
-                        <>
-                            <EyeOff className="inline" size={16} />
-                            {/* <span className="ml-1">Make Public</span> */}
-                        </>
+                        <EyeOff size={16} />
                     )}
                 </button>
             </div>
-            <h2 className="text-sm font-semibold">{task.task_name}</h2>
-            {/* <p className="text-sm button ${getPriorityColor(task.priority)}">
-                <FlagTriangleRight className="inline mr-1" /> {task.priority}
-            </p> */}
-            <p className="text-gray-700 text-xs text-ellipsis overflow-hidden whitespace-wrap" style={{ maxWidth: "calc('100%')" }}>
-                {isExpanded ? task.ask_description : `${task.ask_description.substring(0, 50)}...`}
-            </p>
-            <button onClick={() => setIsExpanded(!isExpanded)} className="text-blue-500 text-xs">
-                {isExpanded ? 'View Less' : 'View More'}
-            </button>
+
+            <h2 className="text-sm font-semibold mt-2">{task.task_name}</h2>
+
+            <div className="mt-2">
+                <p className="text-gray-700 text-xs">
+                    {isExpanded
+                        ? task.ask_description
+                        : task.ask_description?.length > 50
+                            ? `${task.ask_description.substring(0, 50)}...`
+                            : task.ask_description
+                    }
+                </p>
+                {task.ask_description?.length > 50 && (
+                    <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="text-blue-500 text-xs mt-1 hover:text-blue-700"
+                    >
+                        {isExpanded ? 'View Less' : 'View More'}
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
 
-export default TaskCard; 
+export default TaskCard;

@@ -1,9 +1,18 @@
 import axiosInstance from '@/lib/axiosInstance';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-export const loginUser = createAsyncThunk('user/login', async (userData) => {
-    const response = await axiosInstance.post('/user/login/', userData);
-    return response.data;
+export const loginUser = createAsyncThunk('user/login', async (userData, { dispatch }) => {
+    const response = await axiosInstance.post('/user/login', userData);
+    const { user_data } = response.data;
+
+    // Store user data and token in local storage
+    localStorage.setItem('user_data', JSON.stringify(user_data));
+    localStorage.setItem('auth_token', user_data.token);
+
+    // Redirect to home page
+    dispatch(redirectToHome());
+
+    return user_data; // Return user data for further use if needed
 });
 
 export const registerUser = createAsyncThunk('user/register', async (userData) => {
@@ -14,11 +23,16 @@ export const registerUser = createAsyncThunk('user/register', async (userData) =
 const userSlice = createSlice({
     name: 'user',
     initialState: {},
-    reducers: {},
+    reducers: {
+        redirectToHome: () => {
+            // something we can change later
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(loginUser.fulfilled, (state, action) => {
                 // Handle successful login
+                return action.payload; // Store user data in state if needed
             })
             .addCase(registerUser.fulfilled, (state, action) => {
                 // Handle successful registration
@@ -26,4 +40,6 @@ const userSlice = createSlice({
     },
 });
 
-export default userSlice.reducer; 
+export const { redirectToHome } = userSlice.actions;
+
+export default userSlice.reducer;

@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 const Header = () => {
-    const isAuthenticated = typeof window !== "undefined" && localStorage.getItem("auth_token");
+    const [userData, setUserData] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const data = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user_data")) : null;
+        if (data) {
+            setUserData(data);
+            setIsAuthenticated(true);
+        }
+    }, []);
 
     return (
-        <header className=" px-4 md:px-6 bg-gray-100 shadow w-full ">
+        <header className="px-4 md:px-6 bg-gray-100 shadow w-full">
             <div className='container mx-auto flex items-center justify-between py-2'>
                 <div className="flex items-center">
                     <Link href="/" className="text-lg font-bold">
@@ -18,7 +27,11 @@ const Header = () => {
                     <Link href="/tasks" className="text-sm font-medium text-gray-700 hover:text-indigo-800">Tasks</Link>
                 </nav>
                 <div className="flex items-center space-x-2">
-                    {!isAuthenticated && (
+                    {isAuthenticated ? (
+                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-50 text-gray-700 font-medium">
+                            {userData.username.charAt(0).toUpperCase()}
+                        </span>
+                    ) : (
                         <>
                             <Link href="/login">
                                 <button className="px-2 py-1 border border-gray-300 rounded hover:bg-gray-200 text-sm">Login</button>

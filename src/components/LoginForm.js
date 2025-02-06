@@ -1,11 +1,13 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { loginUser } from '../services/userService';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
+import { loginUser } from '@/services/slices/userSlice';
+import { useRouter } from 'next/router';
 
 const LoginForm = () => {
     const dispatch = useDispatch();
+    const router = useRouter();
 
     const validationSchema = Yup.object({
         email: Yup.string().email('Invalid email format').required('Email is required'),
@@ -20,9 +22,10 @@ const LoginForm = () => {
         validationSchema,
         onSubmit: async (values) => {
             try {
-                const user = await loginUser(values);
-                console.log('User logged in:', user);
+                const user = await dispatch(loginUser(values)).unwrap();
+                // console.log('User logged in:', user);
                 // Handle successful login (e.g., redirect or show a success message)
+                router.push('/');
             } catch (error) {
                 console.error('Error logging in:', error);
                 // Handle error (e.g., show an error message)
