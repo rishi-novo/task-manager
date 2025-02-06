@@ -55,9 +55,9 @@ const TaskList = () => {
     if (error) return <div>Error: {error}</div>;
 
     const priorityColumns = {
-        High: tasks.filter(task => task.priority === 'High'),
-        Medium: tasks.filter(task => task.priority === 'Medium'),
-        Normal: tasks.filter(task => task.priority === 'Normal')
+        High: tasks?.filter(task => task.priority === 'High'),
+        Medium: tasks?.filter(task => task.priority === 'Medium'),
+        Normal: tasks?.filter(task => task.priority === 'Normal')
     };
 
     const columnStyles = {
@@ -80,7 +80,7 @@ const TaskList = () => {
                                 style={{ height: "calc(100vh - 150px)" }}
                             >
                                 <h3 className="font-bold text-lg mb-2">{priority} Priority</h3>
-                                {priorityTasks.map((task, index) => (
+                                {priorityTasks?.map((task, index) => (
                                     <Draggable
                                         key={task.id}
                                         draggableId={task.id.toString()}

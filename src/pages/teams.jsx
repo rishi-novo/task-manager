@@ -9,14 +9,47 @@ import CreateTeamModal from '@/components/CreateTeamModal';
 import Shimmer from '@/components/Shimmer';
 import Layout from '@/components/Layout';
 import { Check, X } from 'lucide-react';
+import axiosInstance from '@/lib/axiosInstance';
+
+const Accordion = ({ title, children }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleAccordion = () => {
+        setIsOpen(!isOpen);
+    };
+
+    return (
+        <div className="border border-gray-300 rounded-md mb-4">
+            <div
+                className="p-4 cursor-pointer bg-gray-100 flex items-center justify-between"
+                onClick={toggleAccordion}
+            >
+                <h3 className="text-lg font-semibold">{title}</h3>
+                <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 10l5 5 5-5H7z" />
+                    </svg>
+                </span>
+            </div>
+            {isOpen && (
+                <div className="p-4">
+                    {children}
+                </div>
+            )}
+        </div>
+    );
+};
 
 const TeamsPage = () => {
     const [teamsData, setTeamsData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [allUsers, setAllUsers] = useState([]);
+    const [teamLimits, setTeamLimits] = useState({});
 
     useEffect(() => {
+        fetchAllUsers();
         fetchTeamsData();
     }, []);
 
@@ -83,6 +116,56 @@ const TeamsPage = () => {
         }
     };
 
+    console.log("allUsers", allUsers);
+
+
+    const fetchAllUsers = async () => {
+        console.log("allUsers : ", allUsers)
+        try {
+            const response = await axiosInstance.get('/users');
+            setAllUsers(response?.data ? response.data : []);
+        } catch (err) {
+            console.error('Error fetching users:', err);
+            setAllUsers([]);
+        }
+    };
+
+    const assignUserToTeam = async (teamId, uuid) => {
+        console.log(uuid);
+        try {
+            await axiosInstance.post('/team_users/', {
+                team_id: teamId,
+                user_id: uuid,
+                can_view: "true",
+                can_comment: "true",
+                can_edit: "true"
+            });
+        } catch (err) {
+            console.error('Error assigning user to team:', err);
+        }
+    };
+
+    const removeUserFromTeam = async (userId, teamId) => {
+        try {
+            const response = await axiosInstance.delete(`/team_users/id`, {
+                params: { user_id: userId }
+            });
+
+            // Check if the response contains the deleted user information
+            if (response.data.team_users_deleted) {
+                setTeamsData(prevTeams =>
+                    prevTeams.map(team =>
+                        team.id === teamId
+                            ? { ...team, users: team.users.filter(user => user.uuid !== userId) }
+                            : team
+                    )
+                );
+            }
+        } catch (err) {
+            console.error('Error removing user from team:', err);
+        }
+    };
+
     if (loading) return (
         <Layout>
             <div className="container mx-auto p-4">
@@ -130,35 +213,56 @@ const TeamsPage = () => {
                                         {team.totalMembers} member{team.totalMembers !== 1 ? 's' : ''}
                                     </p>
                                 </div>
-                                <span className="text-sm text-gray-500">
+                                {/* <span className="text-sm text-gray-500">
                                     Created: {new Date(team.created_at).toLocaleDateString()}
-                                </span>
+                                </span> */}
+                                <button
+                                    onClick={() => {/* Logic to open user assignment modal */ }}
+                                    disabled={team.totalMembers >= teamLimits[team.id]}
+                                    className="button rounded border border-indigo-600 text-indigo-800 bg-indigo-50 hover:bg-indigo-100 font-medium py-1 px-2 text-sm"
+                                >
+                                    Add Members
+                                </button>
                             </div>
 
-                            <div className="overflow-x-auto">
+                            <Accordion title="Available Users">
+                                <div className="mt-4">
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <tbody className="divide-y divide-gray-200">
+                                            {allUsers?.users_all?.map(user => (
+                                                <tr key={user.id}>
+                                                    <td className="px-4 py-2 text-sm">{user.name}</td>
+                                                    <td className="px-4 py-2 text-sm">{user.email}</td>
+                                                    <td className="px-4 py-2 text-center">
+                                                        <button
+                                                            onClick={() => assignUserToTeam(team.id, user.id)}
+                                                            className="button rounded bg-green-50 text-green-600 py-1 px-2 text-xs"
+                                                        >
+                                                            Assign to Team
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Accordion>
+
+                            <div className="mt-4">
+                                <h3 className="text-lg font-semibold">Team Members</h3>
                                 <table className="min-w-full divide-y divide-gray-200">
-                                    <thead>
-                                        <tr>
-                                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Name</th>
-                                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
-                                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">View</th>
-                                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Comment</th>
-                                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Edit</th>
-                                        </tr>
-                                    </thead>
                                     <tbody className="divide-y divide-gray-200">
                                         {team.users.map(user => (
                                             <tr key={user.uuid}>
                                                 <td className="px-4 py-2 text-sm">{user.name}</td>
                                                 <td className="px-4 py-2 text-sm">{user.email}</td>
                                                 <td className="px-4 py-2 text-center">
-                                                    <PermissionIcon isGranted={user.permissions.canView} />
-                                                </td>
-                                                <td className="px-4 py-2 text-center">
-                                                    <PermissionIcon isGranted={user.permissions.canComment} />
-                                                </td>
-                                                <td className="px-4 py-2 text-center">
-                                                    <PermissionIcon isGranted={user.permissions.canEdit} />
+                                                    <button
+                                                        onClick={() => removeUserFromTeam(user.uuid, team.id)}
+                                                        className="button rounded bg-red-50 py-1 px-2 text-red-500 text-xs"
+                                                    >
+                                                        Remove from Team
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}

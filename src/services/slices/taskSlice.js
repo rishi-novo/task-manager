@@ -3,13 +3,13 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Fetch tasks
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
-    const response = await axiosInstance.get('/tasks');
+    const response = await axiosInstance.get('/tasks/');
     return response.data;
 });
 
 // Create a new task
 export const createTask = createAsyncThunk('tasks/createTask', async (taskData) => {
-    const response = await axiosInstance.post('/tasks', taskData);
+    const response = await axiosInstance.post('/tasks/', taskData);
     return response.data; // Return the created task
 });
 
