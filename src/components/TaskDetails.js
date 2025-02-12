@@ -8,30 +8,34 @@ import {
 import { fetchAssigneesByTaskId } from '@/services/slices/assigneeSlice';
 import { Eye, EyeOff, X, Edit2, Save, ChevronDown } from 'lucide-react';
 
-const TaskDetails = ({ task: initialTask, onClose }) => {
+const TaskDetails = ({ taskId, onClose }) => {
     const dispatch = useDispatch();
-    const [task, setTask] = useState(initialTask);
+    const [task, setTask] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [editedTask, setEditedTask] = useState(initialTask);
+    const [editedTask, setEditedTask] = useState(null);
     const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
-    const assignees = useSelector(state => state.tasks.assignees[initialTask.id] || []);
+    const assignees = useSelector(state => state.assignees.taskAssignees[taskId] || []);
 
-    // Fetch fresh task details and assignees when opened
+    // Fetch task details and assignees when modal opens
     useEffect(() => {
         const fetchDetails = async () => {
-            const result = await dispatch(fetchTaskById(initialTask.id)).unwrap();
-            setTask(result.task);
-            setEditedTask(result.task);
-            dispatch(fetchAssigneesByTaskId(initialTask.id));
+            try {
+                const result = await dispatch(fetchTaskById(taskId)).unwrap();
+                setTask(result.task);
+                setEditedTask(result.task);
+                dispatch(fetchAssigneesByTaskId(taskId));
+            } catch (error) {
+                console.error('Error fetching task details:', error);
+            }
         };
         fetchDetails();
-    }, [dispatch, initialTask.id]);
+    }, [dispatch, taskId]);
 
     const handlePriorityChange = async (newPriority) => {
         try {
             const result = await dispatch(changeTaskPriority({
-                task_id: task.id,
-                priority: newPriority
+                task_id: taskId,
+                priority: newPriority // This will be "High", "Medium", or "Normal"
             })).unwrap();
             setTask(result.task);
             setShowPriorityDropdown(false);
@@ -62,7 +66,13 @@ const TaskDetails = ({ task: initialTask, onClose }) => {
         }
     };
 
-    if (!task) return <div>Loading...</div>;
+    if (!task) return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-4">
+                Loading task details...
+            </div>
+        </div>
+    );
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

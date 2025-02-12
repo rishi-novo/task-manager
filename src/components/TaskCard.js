@@ -1,27 +1,38 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Eye, EyeOff } from 'lucide-react';
+import { fetchAssigneesByTaskId } from '@/services/slices/assigneeSlice';
 import TaskDetails from './TaskDetails';
 
-const TaskCard = ({ task, isDragging }) => {
-    const [showDetails, setShowDetails] = useState(false);
+const TaskCard = ({ task, isDragging, onClick }) => {
+    const dispatch = useDispatch();
+    const [showTaskDetails, setShowTaskDetails] = useState(false);
     const taskAssignees = useSelector(state => state.assignees.taskAssignees[task.id] || []);
+
+    useEffect(() => {
+        dispatch(fetchAssigneesByTaskId(task.id));
+    }, [dispatch, task.id]);
+
+    const handleCardClick = (e) => {
+        e.stopPropagation();
+        debugger
+        setShowTaskDetails(true);
+        if (onClick) onClick(task);
+    };
 
     return (
         <>
             <div
-                onClick={() => setShowDetails(true)}
-                className={`bg-white rounded-lg shadow-sm p-3 transition-shadow ${isDragging ? 'shadow-lg' : 'hover:shadow-md'
+                onClick={handleCardClick}
+                className={`bg-white rounded-lg shadow-sm p-3 transition-shadow mb-3 ${isDragging ? 'shadow-lg' : 'hover:shadow-md'
                     } cursor-pointer`}
             >
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-gray-500">{task.task_id}</span>
                     <div className="flex gap-2">
-                        <button
-                            className="text-gray-400 hover:text-gray-600"
-                        >
+                        <span className="text-gray-400">
                             {task.visibility === 'Public' ? <Eye size={16} /> : <EyeOff size={16} />}
-                        </button>
+                        </span>
                     </div>
                 </div>
 
@@ -66,11 +77,11 @@ const TaskCard = ({ task, isDragging }) => {
                 </div>
             </div>
 
-            {showDetails && (
+            {/* Task Details Modal */}
+            {showTaskDetails && (
                 <TaskDetails
-                    task={task}
-                    onClose={() => setShowDetails(false)}
-                    assignees={taskAssignees}
+                    taskId={task.id}
+                    onClose={() => setShowTaskDetails(false)}
                 />
             )}
         </>

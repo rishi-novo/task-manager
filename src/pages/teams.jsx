@@ -3,13 +3,15 @@ import {
     getTeamUsersByUserId,
     getTeamById,
     getTeamUsersByTeamId,
-    getUserById
+    getUserById,
+    deleteTeam
 } from '@/services/teamService';
 import CreateTeamModal from '@/components/CreateTeamModal';
 import Shimmer from '@/components/Shimmer';
 import Layout from '@/components/Layout';
-import { Check, X } from 'lucide-react';
+import { Check, X, Eye, MessageSquare, Edit2, Trash2 } from 'lucide-react';
 import axiosInstance from '@/lib/axiosInstance';
+import UserAssignmentModal from '@/components/UserAssignmentModal';
 
 const Accordion = ({ title, children }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -47,6 +49,8 @@ const TeamsPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [allUsers, setAllUsers] = useState([]);
     const [teamLimits, setTeamLimits] = useState({});
+    const [selectedTeam, setSelectedTeam] = useState(null);
+    const [showAssignModal, setShowAssignModal] = useState(false);
 
     useEffect(() => {
         fetchAllUsers();
@@ -131,22 +135,27 @@ const TeamsPage = () => {
         }
     };
 
-    const assignUserToTeam = async (teamId, uuid) => {
-        console.log(uuid);
+    const assignUserToTeam = async (teamId, uuid, permissions) => {
         try {
-            // Validate count before assigning
             const team = teamsData.find(team => team.id === teamId);
-            if (team && team.totalMembers < teamLimits[teamId]) { // Assuming teamLimits holds the max members allowed
-                await axiosInstance.post('/team_users/', {
-                    team_id: teamId,
-                    user_id: uuid,
-                    can_view: "true",
-                    can_comment: "true",
-                    can_edit: "true"
-                });
-            } else {
+
+            // Check team limit
+            if (!team || team.totalMembers >= team.limit) {
                 console.error('Cannot assign user: team limit reached or invalid team.');
+                return;
             }
+
+            await axiosInstance.post('/team_users/', {
+                team_id: teamId,
+                user_id: uuid,
+                can_view: permissions.canView.toString(),
+                can_comment: permissions.canComment.toString(),
+                can_edit: permissions.canEdit.toString()
+            });
+
+            // Refresh teams data after successful assignment
+            await fetchTeamsData();
+            setShowAssignModal(false);
         } catch (err) {
             console.error('Error assigning user to team:', err);
         }
@@ -179,6 +188,25 @@ const TeamsPage = () => {
         }
     };
 
+    const handleDeleteTeam = async (teamId) => {
+        if (window.confirm('Are you sure you want to delete this team? This action cannot be undone.')) {
+            try {
+                await deleteTeam(teamId);
+                // Remove team from local state
+                setTeamsData(prevTeams => prevTeams.filter(team => team.id !== teamId));
+            } catch (err) {
+                console.error('Error deleting team:', err);
+            }
+        }
+    };
+
+    const PermissionIcon = ({ permission, Icon }) => (
+        <span className={`inline-flex items-center justify-center ${permission ? 'text-green-500' : 'text-gray-300'
+            }`}>
+            <Icon size={14} />
+        </span>
+    );
+
     if (loading) return (
         <Layout>
             <div className="container mx-auto p-4">
@@ -195,14 +223,6 @@ const TeamsPage = () => {
         </Layout>
     );
 
-    const PermissionIcon = ({ isGranted }) => (
-        isGranted ? (
-            <Check className="text-green-500 h-4 w-4" />
-        ) : (
-            <X className="text-red-500 h-4 w-4" />
-        )
-    );
-
     return (
         <Layout>
             <div className="container mx-auto p-4">
@@ -216,65 +236,76 @@ const TeamsPage = () => {
                     </button>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4">
                     {teamsData.map(team => (
-                        <div key={team.id} className="bg-white rounded-lg shadow-md p-6">
+                        <div key={team.id} className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
                             <div className="flex justify-between items-center mb-4">
                                 <div>
-                                    <h2 className="text-xl font-semibold">{team.team_name}</h2>
-                                    <p className="text-gray-500 text-sm">
-                                        {team.totalMembers} member{team.totalMembers !== 1 ? 's' : ''}
+                                    <h2 className="text-sm font-medium text-gray-900">{team.team_name}</h2>
+                                    <p className="text-xs text-gray-500">
+                                        {team.totalMembers}/{team.limit} members
                                     </p>
                                 </div>
-                                {/* <span className="text-sm text-gray-500">
-                                    Created: {new Date(team.created_at).toLocaleDateString()}
-                                </span> */}
-                                <button
-                                    onClick={() => {/* Logic to open user assignment modal */ }}
-                                    disabled={team.totalMembers >= teamLimits[team.id]}
-                                    className="button rounded border border-indigo-600 text-indigo-800 bg-indigo-50 hover:bg-indigo-100 font-medium py-1 px-2 text-sm"
-                                >
-                                    Add Members
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => {
+                                            setSelectedTeam(team);
+                                            setShowAssignModal(true);
+                                        }}
+                                        disabled={team.totalMembers >= team.limit}
+                                        className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Add Members
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteTeam(team.id)}
+                                        className="text-xs px-3 py-1.5 rounded-full border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
                             </div>
 
-                            <Accordion title="Available Users">
-                                <div className="mt-4">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <tbody className="divide-y divide-gray-200">
-                                            {allUsers?.users_all?.map(user => (
-                                                <tr key={user.id}>
-                                                    <td className="px-4 py-2 text-sm">{user.name}</td>
-                                                    <td className="px-4 py-2 text-sm">{user.email}</td>
-                                                    <td className="px-4 py-2 text-center">
-                                                        <button
-                                                            onClick={() => assignUserToTeam(team.id, user.id)}
-                                                            className="button rounded bg-green-50 text-green-600 py-1 px-2 text-xs"
-                                                        >
-                                                            Assign to Team
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Accordion>
-
-                            <div className="mt-4">
-                                <h3 className="text-lg font-semibold">Team Members</h3>
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <tbody className="divide-y divide-gray-200">
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-100">
+                                    <thead>
+                                        <tr className="text-xs text-gray-500">
+                                            <th className="px-3 py-2 text-left font-medium">Name</th>
+                                            <th className="px-3 py-2 text-left font-medium">Email</th>
+                                            <th className="px-3 py-2 text-center font-medium">Permissions</th>
+                                            <th className="px-3 py-2 text-right font-medium"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-50">
                                         {team.users.map(user => (
-                                            <tr key={user.uuid}>
-                                                <td className="px-4 py-2 text-sm">{user.name}</td>
-                                                <td className="px-4 py-2 text-sm">{user.email}</td>
-                                                <td className="px-4 py-2 text-center">
+                                            <tr key={user.uuid} className="text-sm hover:bg-gray-50">
+                                                <td className="px-3 py-2 text-gray-900">{user.name}</td>
+                                                <td className="px-3 py-2 text-gray-500">{user.email}</td>
+                                                <td className="px-3 py-2">
+                                                    <div className="flex items-center justify-center gap-3">
+                                                        <PermissionIcon
+                                                            permission={user.permissions.canView}
+                                                            Icon={Eye}
+                                                            title="Can View"
+                                                        />
+                                                        <PermissionIcon
+                                                            permission={user.permissions.canComment}
+                                                            Icon={MessageSquare}
+                                                            title="Can Comment"
+                                                        />
+                                                        <PermissionIcon
+                                                            permission={user.permissions.canEdit}
+                                                            Icon={Edit2}
+                                                            title="Can Edit"
+                                                        />
+                                                    </div>
+                                                </td>
+                                                <td className="px-3 py-2 text-right">
                                                     <button
                                                         onClick={() => removeUserFromTeam(user.uuid, team.id)}
-                                                        className="button rounded bg-red-50 py-1 px-2 text-red-500 text-xs"
+                                                        className="text-xs px-2 py-1 rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
                                                     >
-                                                        Remove from Team
+                                                        Remove
                                                     </button>
                                                 </td>
                                             </tr>
@@ -287,6 +318,16 @@ const TeamsPage = () => {
                 </div>
 
                 <CreateTeamModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                <UserAssignmentModal
+                    isOpen={showAssignModal}
+                    onClose={() => {
+                        setShowAssignModal(false);
+                        setSelectedTeam(null);
+                    }}
+                    team={selectedTeam}
+                    allUsers={allUsers}
+                    onAssignUser={assignUserToTeam}
+                />
             </div>
         </Layout>
     );

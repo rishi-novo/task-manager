@@ -34,14 +34,25 @@ const assigneeSlice = createSlice({
         taskAssignees: {}, // Keyed by task_id
         userTasks: {}, // Keyed by user_id
         users: {}, // Keyed by user_id
-        loading: false,
-        error: null
+        loading: {}, // Track loading state per taskId
+        error: {} // Track errors per taskId
     },
     reducers: {},
     extraReducers: (builder) => {
         builder
+            // Handle fetchAssigneesByTaskId states
+            .addCase(fetchAssigneesByTaskId.pending, (state, action) => {
+                state.loading[action.meta.arg] = true;
+                state.error[action.meta.arg] = null;
+            })
             .addCase(fetchAssigneesByTaskId.fulfilled, (state, action) => {
+                state.loading[action.meta.arg] = false;
                 state.taskAssignees[action.payload.taskId] = action.payload.assignees;
+                state.error[action.meta.arg] = null;
+            })
+            .addCase(fetchAssigneesByTaskId.rejected, (state, action) => {
+                state.loading[action.meta.arg] = false;
+                state.error[action.meta.arg] = action.error.message;
             })
             .addCase(fetchTasksByUserId.fulfilled, (state, action) => {
                 state.userTasks[action.meta.arg] = action.payload.data;

@@ -19,6 +19,7 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { SortableTask } from './SortableTask';
+import TaskDetails from './TaskDetails';
 
 const TaskList = () => {
     const dispatch = useDispatch();
@@ -77,26 +78,31 @@ const TaskList = () => {
         setActiveId(event.active.id);
     };
 
+    const PRIORITY_COLUMNS = {
+        'High': { id: 'High', title: 'High Priority', bgColor: 'bg-red-50/30' },
+        'Medium': { id: 'Medium', title: 'Medium Priority', bgColor: 'bg-yellow-50/30' },
+        'Normal': { id: 'Normal', title: 'Normal Priority', bgColor: 'bg-blue-50/30' }
+    };
+
     const handleDragEnd = async (event) => {
         const { active, over } = event;
 
         if (!over) return;
 
-        const activeTask = allTasks.find(task => task.id === active.id);
+        const activeTask = filteredTasks.find(task => task.id === active.id);
+        const overId = over.id;
 
-        // Directly map to priority based on which column it's dropped into
-        let newPriority;
-        if (over.id === 'High') newPriority = 'High';
-        else if (over.id === 'Medium') newPriority = 'Medium';
-        else if (over.id === 'Normal') newPriority = 'Normal';
+        // Find which priority column we dropped into
+        const newPriority = Object.keys(PRIORITY_COLUMNS).find(priority =>
+            PRIORITY_COLUMNS[priority].id === overId
+        );
 
-        if (activeTask && activeTask.priority !== newPriority) {
+        if (activeTask && newPriority && activeTask.priority !== newPriority) {
             try {
-                await changeTaskPriority({
+                await dispatch(changeTaskPriority({
                     task_id: activeTask.id,
                     priority: newPriority
-                });
-                // Refresh tasks after successful priority change
+                })).unwrap();
                 dispatch(fetchAllTasks());
             } catch (error) {
                 console.error('Error updating task priority:', error);
@@ -106,9 +112,9 @@ const TaskList = () => {
         setActiveId(null);
     };
 
-    // Handle task click and fetch assignees
-    const handleTaskClick = async (task) => {
-        setSelectedTask(task);
+    const handleTaskClick = (task) => {
+        console.log("Task clicked:", task.id); // Debug log
+        setSelectedTask(task.id);
     };
 
     // Handle assignee removal
@@ -127,7 +133,7 @@ const TaskList = () => {
     const handleAddAssignee = async (newAssignee) => {
         try {
             await addAssignee({
-                task_id: selectedTask.id,
+                task_id: selectedTask,
                 team_id: 2, // Your team ID
                 ...newAssignee
             });
@@ -140,21 +146,9 @@ const TaskList = () => {
     if (loading) return <div>Loading tasks...</div>;
 
     const priorityColumns = {
-        High: filteredTasks?.filter(task => task.priority === 'High'),
-        Medium: filteredTasks?.filter(task => task.priority === 'Medium'),
-        Normal: filteredTasks?.filter(task => task.priority === 'Normal')
-    };
-
-    const columnStyles = {
-        High: 'bg-red-50/30',
-        Medium: 'bg-yellow-50/30',
-        Normal: 'bg-blue-50/30'
-    };
-
-    const columnHeaders = {
-        High: { title: 'High Priority', count: priorityColumns.High?.length || 0 },
-        Medium: { title: 'Medium Priority', count: priorityColumns.Medium?.length || 0 },
-        Normal: { title: 'Normal Priority', count: priorityColumns.Normal?.length || 0 }
+        High: filteredTasks.filter(task => task.priority === 'High'),
+        Medium: filteredTasks.filter(task => task.priority === 'Medium'),
+        Normal: filteredTasks.filter(task => task.priority === 'Normal')
     };
 
     return (
@@ -165,33 +159,28 @@ const TaskList = () => {
             onDragEnd={handleDragEnd}
         >
             <div className="grid grid-cols-3 gap-4 p-4">
-                {Object.entries(priorityColumns).map(([priority, priorityTasks]) => (
+                {Object.entries(PRIORITY_COLUMNS).map(([priority, column]) => (
                     <div
                         key={priority}
-                        id={priority}
-                        className={`rounded-lg ${columnStyles[priority]}`}
+                        id={column.id}
+                        className={`rounded-lg ${column.bgColor}`}
                         style={{ minHeight: "calc(100vh - 150px)" }}
                     >
                         <div className="p-4 flex items-center justify-between border-b border-gray-200">
-                            <div className="flex items-center gap-2">
-                                <h3 className="font-medium text-gray-700">
-                                    {columnHeaders[priority].title}
-                                </h3>
-                                <span className="text-sm text-gray-500">
-                                    {columnHeaders[priority].count}
-                                </span>
-                            </div>
+                            <h3 className="font-medium text-gray-700">
+                                {column.title} ({priorityColumns[priority]?.length || 0})
+                            </h3>
                         </div>
                         <div className="p-2">
                             <SortableContext
-                                items={priorityTasks?.map(task => task.id) || []}
+                                items={priorityColumns[priority]?.map(task => task.id) || []}
                                 strategy={verticalListSortingStrategy}
                             >
-                                {priorityTasks?.map((task) => (
+                                {priorityColumns[priority]?.map((task) => (
                                     <SortableTask
                                         key={task.id}
                                         task={task}
-                                        onClick={() => handleTaskClick(task)}
+                                        onClick={handleTaskClick}
                                     />
                                 ))}
                             </SortableContext>
@@ -202,62 +191,17 @@ const TaskList = () => {
             <DragOverlay>
                 {activeId ? (
                     <TaskCard
-                        task={allTasks.find(task => task.id === activeId)}
+                        task={filteredTasks.find(task => task.id === activeId)}
                         isDragging
                     />
                 ) : null}
             </DragOverlay>
 
             {selectedTask && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg max-w-2xl w-full mx-4">
-                        <h2 className="text-xl font-bold mb-4">{selectedTask.task_name}</h2>
-                        <p className="text-gray-600 mb-4">{selectedTask.task_description}</p>
-
-                        {/* Assignees Section */}
-                        <div className="mb-4">
-                            <h3 className="font-medium mb-2">Assignees</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {userTasks[selectedTask.id]?.map(assignee => (
-                                    <div
-                                        key={assignee.id}
-                                        className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1"
-                                    >
-                                        <div
-                                            className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs"
-                                            title={assignee.user_name}
-                                        >
-                                            {assignee.user_name.charAt(0)}
-                                        </div>
-                                        <span className="text-sm">{assignee.user_name}</span>
-                                        {isLoggedIn && (
-                                            <button
-                                                onClick={() => handleRemoveAssignee(assignee.id)}
-                                                className="text-red-500 hover:text-red-700"
-                                            >
-                                                ×
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Add Assignee Form (only shown for logged-in users) */}
-                        {isLoggedIn && (
-                            <div className="mb-4">
-                                {/* Add your form for adding new assignees */}
-                            </div>
-                        )}
-
-                        <button
-                            onClick={() => setSelectedTask(null)}
-                            className="text-gray-500 hover:text-gray-700"
-                        >
-                            Close
-                        </button>
-                    </div>
-                </div>
+                <TaskDetails
+                    taskId={selectedTask}
+                    onClose={() => setSelectedTask(null)}
+                />
             )}
         </DndContext>
     );

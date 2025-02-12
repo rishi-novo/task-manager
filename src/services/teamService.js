@@ -25,3 +25,15 @@ export const createTeam = async (teamData) => {
     const response = await axiosInstance.post('/team/', teamData);
     return response.data;
 };
+
+export const deleteTeam = async (teamId) => {
+    try {
+        const response = await axiosInstance.delete(`/team/id`, {
+            params: { id: teamId }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting team:', error);
+        throw error;
+    }
+};
