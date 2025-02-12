@@ -1,60 +1,79 @@
 import React, { useState } from 'react';
-import { changeTaskVisibility } from '@/services/taskService';
+import { useSelector } from 'react-redux';
 import { Eye, EyeOff } from 'lucide-react';
+import TaskDetails from './TaskDetails';
 
-const TaskCard = ({ task }) => {
-    const [visibility, setVisibility] = useState(task.visibility);
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    const handleVisibilityToggle = async () => {
-        try {
-            const newVisibility = visibility === 'Public' ? 'Private' : 'Public';
-            await changeTaskVisibility({ task_id: task.id, visibility: newVisibility });
-            setVisibility(newVisibility);
-        } catch (error) {
-            console.error('Error toggling visibility:', error);
-        }
-    };
+const TaskCard = ({ task, isDragging }) => {
+    const [showDetails, setShowDetails] = useState(false);
+    const taskAssignees = useSelector(state => state.assignees.taskAssignees[task.id] || []);
 
     return (
-        <div className="border p-2 rounded shadow bg-white">
-            <div className="flex items-center justify-between w-full">
-                <span className="text-xs uppercase text-gray-600 bg-gray-200 py-1 px-2 rounded font-medium">
-                    {task.task_id}
-                </span>
-                <button
-                    onClick={handleVisibilityToggle}
-                    className="text-zinc-500 hover:text-zinc-700 transition-colors"
-                >
-                    {visibility === 'Public' ? (
-                        <Eye size={16} />
-                    ) : (
-                        <EyeOff size={16} />
-                    )}
-                </button>
-            </div>
+        <>
+            <div
+                onClick={() => setShowDetails(true)}
+                className={`bg-white rounded-lg shadow-sm p-3 transition-shadow ${isDragging ? 'shadow-lg' : 'hover:shadow-md'
+                    } cursor-pointer`}
+            >
+                <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-gray-500">{task.task_id}</span>
+                    <div className="flex gap-2">
+                        <button
+                            className="text-gray-400 hover:text-gray-600"
+                        >
+                            {task.visibility === 'Public' ? <Eye size={16} /> : <EyeOff size={16} />}
+                        </button>
+                    </div>
+                </div>
 
-            <h2 className="text-sm font-semibold mt-2">{task.task_name}</h2>
+                {/* Task Name */}
+                <h4 className="font-medium text-gray-800 mb-2">{task.task_name}</h4>
 
-            <div className="mt-2">
-                <p className="text-gray-700 text-xs">
-                    {isExpanded
-                        ? task.ask_description
-                        : task.ask_description?.length > 50
-                            ? `${task.ask_description.substring(0, 50)}...`
-                            : task.ask_description
-                    }
+                {/* Task Description - truncated with ellipsis */}
+                <p className="text-sm text-gray-600 mb-3 line-clamp-2 hover:line-clamp-none">
+                    {task.ask_description}
                 </p>
-                {task.ask_description?.length > 50 && (
-                    <button
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="text-blue-500 text-xs mt-1 hover:text-blue-700"
-                    >
-                        {isExpanded ? 'View Less' : 'View More'}
-                    </button>
-                )}
+
+                {/* Assignees */}
+                <div className="flex -space-x-2 mb-2">
+                    {taskAssignees.map(assignee => (
+                        <div
+                            key={assignee.id}
+                            className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs border-2 border-white"
+                            title={assignee.user_name}
+                        >
+                            {assignee.user_name.charAt(0)}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Status and Priority */}
+                <div className="mt-2 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">{task.due_date}</span>
+                        {task.status && (
+                            <span className={`text-xs px-2 py-1 rounded-full ${task.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                {task.status}
+                            </span>
+                        )}
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full ${task.priority === 'High' ? 'bg-red-100 text-red-800' :
+                        task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-blue-100 text-blue-800'
+                        }`}>
+                        {task.priority}
+                    </span>
+                </div>
             </div>
-        </div>
+
+            {showDetails && (
+                <TaskDetails
+                    task={task}
+                    onClose={() => setShowDetails(false)}
+                    assignees={taskAssignees}
+                />
+            )}
+        </>
     );
 };
 

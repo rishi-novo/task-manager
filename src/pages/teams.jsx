@@ -19,12 +19,12 @@ const Accordion = ({ title, children }) => {
     };
 
     return (
-        <div className="border border-gray-300 rounded-md mb-4">
+        <div className="border border-gray-300 rounded mb-4">
             <div
-                className="p-4 cursor-pointer bg-gray-100 flex items-center justify-between"
+                className="p-2 cursor-pointer bg-gray-100 flex items-center justify-between"
                 onClick={toggleAccordion}
             >
-                <h3 className="text-lg font-semibold">{title}</h3>
+                <h4 className="text-md font-semibold">{title}</h4>
                 <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 10l5 5 5-5H7z" />
@@ -94,15 +94,16 @@ const TeamsPage = () => {
                                     canView: userTeamDetails.can_view.toLowerCase() === 'true',
                                     canComment: userTeamDetails.can_comment.toLowerCase() === 'true',
                                     canEdit: userTeamDetails.can_edit.toLowerCase() === 'true',
-                                }
+                                },
+                                team_id: teamId
                             };
                         })
                     );
 
                     return {
                         ...teamInfo.team_one,
-                        users: usersWithDetails,
-                        totalMembers: usersWithDetails.length
+                        users: usersWithDetails.filter(user => user.team_id === teamId),
+                        totalMembers: usersWithDetails.filter(user => user.team_id === teamId).length
                     };
                 })
             );
@@ -133,13 +134,19 @@ const TeamsPage = () => {
     const assignUserToTeam = async (teamId, uuid) => {
         console.log(uuid);
         try {
-            await axiosInstance.post('/team_users/', {
-                team_id: teamId,
-                user_id: uuid,
-                can_view: "true",
-                can_comment: "true",
-                can_edit: "true"
-            });
+            // Validate count before assigning
+            const team = teamsData.find(team => team.id === teamId);
+            if (team && team.totalMembers < teamLimits[teamId]) { // Assuming teamLimits holds the max members allowed
+                await axiosInstance.post('/team_users/', {
+                    team_id: teamId,
+                    user_id: uuid,
+                    can_view: "true",
+                    can_comment: "true",
+                    can_edit: "true"
+                });
+            } else {
+                console.error('Cannot assign user: team limit reached or invalid team.');
+            }
         } catch (err) {
             console.error('Error assigning user to team:', err);
         }
@@ -147,19 +154,25 @@ const TeamsPage = () => {
 
     const removeUserFromTeam = async (userId, teamId) => {
         try {
-            const response = await axiosInstance.delete(`/team_users/id`, {
-                params: { user_id: userId }
-            });
+            // Validate count before removing
+            const team = teamsData.find(team => team.id === teamId);
+            if (team && team.totalMembers > 1) { // Ensure at least one member remains
+                const response = await axiosInstance.delete(`/team_users/id`, {
+                    params: { user_id: userId }
+                });
 
-            // Check if the response contains the deleted user information
-            if (response.data.team_users_deleted) {
-                setTeamsData(prevTeams =>
-                    prevTeams.map(team =>
-                        team.id === teamId
-                            ? { ...team, users: team.users.filter(user => user.uuid !== userId) }
-                            : team
-                    )
-                );
+                // Check if the response contains the deleted user information
+                if (response.data.team_users_deleted) {
+                    setTeamsData(prevTeams =>
+                        prevTeams.map(team =>
+                            team.id === teamId
+                                ? { ...team, users: team.users.filter(user => user.uuid !== userId) }
+                                : team
+                        )
+                    );
+                }
+            } else {
+                console.error('Cannot remove user: at least one member must remain in the team.');
             }
         } catch (err) {
             console.error('Error removing user from team:', err);

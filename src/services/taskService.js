@@ -1,7 +1,7 @@
 import axiosInstance from '../lib/axiosInstance';
 
 export const getTasks = async () => {
-    const response = await axiosInstance.get('/tasks/');
+    const response = await axiosInstance.get('/get-all-tasks?id=0');
     return response.data;
 };
 
@@ -35,7 +35,15 @@ export const getTaskTags = async (taskId) => {
     return response.data;
 };
 
-export const changeTaskPriority = async (priorityData) => {
-    const response = await axiosInstance.post('/task/change-priority', priorityData);
-    return response.data;
+export const changeTaskPriority = async ({ task_id, priority }) => {
+    try {
+        const response = await axiosInstance.post('/task/change-priority', {
+            task_id: parseInt(task_id),
+            priority: String(priority)
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error in changeTaskPriority:', error);
+        throw error;
+    }
 }; 

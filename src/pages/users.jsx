@@ -28,6 +28,10 @@ const UsersPage = () => {
         setIsModalOpen(true);
     };
 
+    const handleUserCreated = (newUser) => {
+        setUsers(prevUsers => [...prevUsers, newUser]); // Update users state with the new user
+    };
+
     return (
         <Layout>
             <div className="container mx-auto p-4">
@@ -66,7 +70,7 @@ const UsersPage = () => {
                         </tbody>
                     </table>
                 )}
-                <CreateUserModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                <CreateUserModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onUserCreated={handleUserCreated} />
             </div>
         </Layout>
     );

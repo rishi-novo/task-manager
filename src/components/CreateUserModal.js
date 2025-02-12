@@ -1,8 +1,10 @@
 import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
+import axiosInstance from '@/lib/axiosInstance';
 
-const CreateUserModal = ({ isOpen, onClose }) => {
+const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
     const validationSchema = Yup.object({
         username: Yup.string().required('Username is required'),
         name: Yup.string().required('Name is required'),
@@ -19,9 +21,19 @@ const CreateUserModal = ({ isOpen, onClose }) => {
         },
         validationSchema,
         onSubmit: async (values) => {
-            // Handle user creation logic here
-            console.log('User created:', values);
-            onClose(); // Close the modal after submission
+            try {
+                const response = await axiosInstance.post('/users/', values, {
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    }
+                });
+                console.log('User created:', response.data.user);
+                onUserCreated(response.data.user);
+                onClose();
+            } catch (error) {
+                console.error('Error creating user:', error);
+            }
         },
     });
 

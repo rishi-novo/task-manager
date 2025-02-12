@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const Header = () => {
+    const router = useRouter();
     const [userData, setUserData] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -12,6 +14,13 @@ const Header = () => {
             setIsAuthenticated(true);
         }
     }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("user_data");
+        setUserData(null);
+        setIsAuthenticated(false);
+        router.push('/login');
+    };
 
     return (
         <header className="px-4 md:px-6 bg-gray-100 shadow w-full">
@@ -28,9 +37,17 @@ const Header = () => {
                 </nav>
                 <div className="flex items-center space-x-2">
                     {isAuthenticated ? (
-                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-50 text-gray-700 font-medium">
-                            {userData.username.charAt(0).toUpperCase()}
-                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-50 text-gray-700 font-medium">
+                                {userData.username.charAt(0).toUpperCase()}
+                            </span>
+                            <button
+                                onClick={handleLogout}
+                                className="px-2 py-1 text-sm text-red-600 hover:text-red-800"
+                            >
+                                Logout
+                            </button>
+                        </div>
                     ) : (
                         <>
                             <Link href="/login">

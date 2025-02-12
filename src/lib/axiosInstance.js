@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://cc1fbde45ead-in-south-01.backstract.io/adoring-kalam-7a643470e47e11ef87cf0242ac18000555/api';
+const BASE_URL = 'https://cc1fbde45ead-in-south-01.backstract.io/quizzical-vani-8f7685b8e93611ef95300242ac12000332/api';
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
