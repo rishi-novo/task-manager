@@ -6,6 +6,7 @@ import { useFormik } from 'formik';
 
 const CreateTaskModal = ({ isOpen, onClose }) => {
     const dispatch = useDispatch();
+    const [submitError, setSubmitError] = useState(null);
 
     const validationSchema = Yup.object({
         task_id: Yup.string().required('Task ID is required').transform(value => value.toUpperCase()),
@@ -25,17 +26,21 @@ const CreateTaskModal = ({ isOpen, onClose }) => {
         },
         validationSchema,
         onSubmit: async (values) => {
-            const payload = {
-                task_id: values.task_id,
-                task_name: values.task_name,
-                ask_description: values.ask_description,
-                priority: values.priority,
-                visibility: values.visibility,
-            };
+            try {
+                const payload = {
+                    task_id: values.task_id,
+                    task_name: values.task_name,
+                    ask_description: values.ask_description,
+                    priority: values.priority,
+                    visibility: values.visibility,
+                };
 
-            // Dispatch the createTask action
-            await dispatch(createTask(payload));
-            onClose(); // Close the modal after submission
+                const resultAction = await dispatch(createTask(payload)).unwrap();
+                onClose(); // Close the modal after successful submission
+            } catch (err) {
+                setSubmitError('Failed to create task. Please try again.');
+                console.error('Failed to create task:', err);
+            }
         },
     });
 
@@ -45,6 +50,9 @@ const CreateTaskModal = ({ isOpen, onClose }) => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-6 rounded shadow-lg" style={{ width: "400px" }}>
                 <h2 className="text-lg font-bold mb-4">Create Task</h2>
+                {submitError && (
+                    <div className="mb-4 text-red-500 text-sm">{submitError}</div>
+                )}
                 <form onSubmit={formik.handleSubmit}>
                     <div className="mb-4">
                         <label className="block mb-1">Task ID</label>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
-import TaskList from '@/components/TaskList';
+import SimpleTaskList from '@/components/SimpleTaskList';
 import CreateTaskModal from '@/components/CreateTaskModal';
 
 const TasksPage = () => {
@@ -26,7 +26,7 @@ const TasksPage = () => {
                     Add New Task
                 </button>
             </div>
-            <TaskList />
+            <SimpleTaskList />
             <CreateTaskModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </Layout>
     );

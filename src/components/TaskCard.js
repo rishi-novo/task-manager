@@ -4,7 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { fetchAssigneesByTaskId } from '@/services/slices/assigneeSlice';
 import TaskDetails from './TaskDetails';
 
-const TaskCard = ({ task, isDragging, onClick }) => {
+const TaskCard = ({ task, onClick }) => {
     const dispatch = useDispatch();
     const [showTaskDetails, setShowTaskDetails] = useState(false);
     const taskAssignees = useSelector(state => state.assignees.taskAssignees[task.id] || []);
@@ -15,7 +15,6 @@ const TaskCard = ({ task, isDragging, onClick }) => {
 
     const handleCardClick = (e) => {
         e.stopPropagation();
-        debugger
         setShowTaskDetails(true);
         if (onClick) onClick(task);
     };
@@ -24,8 +23,7 @@ const TaskCard = ({ task, isDragging, onClick }) => {
         <>
             <div
                 onClick={handleCardClick}
-                className={`bg-white rounded-lg shadow-sm p-3 transition-shadow mb-3 ${isDragging ? 'shadow-lg' : 'hover:shadow-md'
-                    } cursor-pointer`}
+                className="bg-white rounded-lg shadow-sm p-3 transition-shadow mb-3 hover:shadow-md cursor-pointer"
             >
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-gray-500">{task.task_id}</span>
